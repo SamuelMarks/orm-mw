@@ -1,0 +1,11 @@
+{
+  "name": "orm-mw",
+  "dependencies": {
+    "connect": "registry:dt/connect#3.4.0+20160510010627",
+    "express": "registry:dt/express#4.0.0+20170118060322",
+    "nodejs-utils": "github:SamuelMarks/nodejs-utils/nodejs-utils.d.ts",
+    "orm-mw": "github:SamuelMarks/orm-mw/orm-mw.d.ts",
+    "restify": "registry:dt/restify#2.0.0+20170317170827",
+    "waterline": "github:SamuelMarks/cust_typings/waterline/waterline.d.ts"
+  }
+}
