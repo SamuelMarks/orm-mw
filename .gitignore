@@ -1,6 +1,9 @@
+tsconfig.json
+typings.json
+tslint.json
+*.ts
 .idea/
 typings/
-*.js
 *.map
 logs/
 *.log
