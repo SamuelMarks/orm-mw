@@ -1,7 +1,4 @@
-tsconfig.json
-typings.json
-tslint.json
-*.ts
+*.js
 .idea/
 typings/
 *.map

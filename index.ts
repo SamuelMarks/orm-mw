@@ -143,7 +143,6 @@ export const tearDownConnections = (orms: IOrmsOut, done: (error?: any) => any) 
     }, done);
 
 export const ormMw = (options?: IormMwConfig): RequestHandler | void => {
-    const routes = new Set<string>();
     const norm = new Set<string>();
     const waterline_set = new Set<any /*program*/>();
     const typeorm_map = new Map<string, any /*program*/>();
@@ -170,7 +169,6 @@ export const ormMw = (options?: IormMwConfig): RequestHandler | void => {
                 waterline_set, typeorm_map, sequelize_map
             );
 
-    options.logger.info('Restify registered routes:\t', Array.from(routes.keys()), ';');
     options.logger.warn('Failed registering models:\t', Array.from(norm.keys()), ';');
 
     parallel({
