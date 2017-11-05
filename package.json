@@ -1,6 +1,6 @@
 {
   "name": "orm-mw",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "Multi-ORM connect-style middleware",
   "main": "index.js",
   "scripts": {
@@ -9,18 +9,18 @@
   "author": "Samuel Marks <samuel@offscale.io>",
   "license": "MIT",
   "devDependencies": {
-    "@types/async": "^2.0.44",
+    "@types/async": "^2.0.45",
     "@types/bunyan": "^1.8.3",
-    "@types/ioredis": "0.0.26",
-    "@types/node": "^8.0.34",
-    "@types/sequelize": "^4.0.76"
+    "@types/ioredis": "0.0.27",
+    "@types/node": "^8.0.47",
+    "@types/sequelize": "^4.0.78"
   },
   "dependencies": {
     "async": "^2.5.0",
-    "ioredis": "^3.1.4",
+    "ioredis": "^3.2.1",
     "nodejs-utils": "https://api.github.com/repos/SamuelMarks/nodejs-utils-dist/tarball",
-    "sequelize": "^4.13.10",
-    "typeorm": "0.1.0",
+    "sequelize": "^4.22.5",
+    "typeorm": "0.1.2",
     "waterline": "https://api.github.com/repos/SamuelMarks/waterline/tarball/c91bdf46d400180ae7e800f684f8fb44f8fed9a5"
   }
 }
