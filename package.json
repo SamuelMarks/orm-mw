@@ -21,6 +21,6 @@
     "nodejs-utils": "https://api.github.com/repos/SamuelMarks/nodejs-utils-dist/tarball",
     "sequelize": "^4.22.11",
     "typeorm": "0.1.3",
-    "waterline": "^0.13.1-8"
+    "waterline": "https://api.github.com/repos/SamuelMarks/waterline/tarball/patch-1"
   }
 }
