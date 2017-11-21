@@ -14,6 +14,7 @@ import { RequestHandler as ExpressRequestHandler } from 'express';
 import { RequestHandler as RestifyRequestHandler } from 'restify';
 
 export type RequestHandler = ConnectRequestHandler | ExpressRequestHandler | RestifyRequestHandler;
+export type Program = any;
 
 export interface IOrmsIn {
     redis?: {

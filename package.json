@@ -11,16 +11,16 @@
   "devDependencies": {
     "@types/async": "^2.0.45",
     "@types/bunyan": "^1.8.3",
-    "@types/ioredis": "0.0.27",
-    "@types/node": "^8.0.47",
-    "@types/sequelize": "^4.0.78"
+    "@types/ioredis": "3.2.1",
+    "@types/node": "^8.0.53",
+    "@types/sequelize": "^4.0.79"
   },
   "dependencies": {
-    "async": "^2.5.0",
+    "async": "^2.6.0",
     "ioredis": "^3.2.1",
     "nodejs-utils": "https://api.github.com/repos/SamuelMarks/nodejs-utils-dist/tarball",
-    "sequelize": "^4.22.5",
-    "typeorm": "0.1.2",
-    "waterline": "https://api.github.com/repos/SamuelMarks/waterline/tarball/c91bdf46d400180ae7e800f684f8fb44f8fed9a5"
+    "sequelize": "^4.22.11",
+    "typeorm": "0.1.3",
+    "waterline": "^0.13.1-8"
   }
 }

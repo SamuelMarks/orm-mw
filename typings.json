@@ -6,6 +6,6 @@
     "nodejs-utils": "github:SamuelMarks/nodejs-utils/nodejs-utils.d.ts",
     "orm-mw": "github:SamuelMarks/orm-mw/orm-mw.d.ts",
     "restify": "registry:dt/restify#2.0.0+20170317170827",
-    "waterline": "github:SamuelMarks/cust_typings/waterline/waterline.d.ts"
+    "waterline": "github:SamuelMarks/cust_typings/waterline/waterline.d.ts#ad94a47157009c0f9ee5425a0a81e6f9e5665973"
   }
 }

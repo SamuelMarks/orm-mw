@@ -11,14 +11,14 @@ import { map, parallel } from 'async';
 
 import { model_route_to_map } from 'nodejs-utils';
 
-import { IormMwConfig, IOrmReq, IOrmsOut, RequestHandler } from 'orm-mw';
+import { IormMwConfig, IOrmReq, IOrmsOut, Program, RequestHandler } from 'orm-mw';
 
 const populateModels = (program: any,
                         omit_models: string[],
                         norm_set: Set<any>,
                         waterline_set: Set<any>,
-                        typeorm_map: Map<string, any>,
-                        sequelize_map: Map<string, any>) =>
+                        typeorm_map: Map<string, Program>,
+                        sequelize_map: Map<string, Program>) =>
     Object
         .keys(program)
         .filter(entity => program[entity] != null && omit_models.indexOf(entity) === -1)
@@ -50,7 +50,7 @@ const redisHandler = (orm: {skip: boolean, config?: Redis.RedisOptions | string}
     });
 };
 
-const sequelizeHandler = (orm: {skip: boolean, uri?: string, config?: sequelize.Options, map: Map<string, any>},
+const sequelizeHandler = (orm: {skip: boolean, uri?: string, config?: sequelize.Options, map: Map<string, Program>},
                           logger: Logger, callback: (err, ...args) => void) => {
     if (orm.skip) return callback(void 0);
 
@@ -75,7 +75,10 @@ const sequelizeHandler = (orm: {skip: boolean, uri?: string, config?: sequelize.
         .catch(callback);
 };
 
-const typeormHandler = (orm: {skip: boolean, uri?: string, config?: typeorm.ConnectionOptions, map: Map<string, any>},
+const typeormHandler = (orm: {
+                            skip: boolean, uri?: string,
+                            config?: typeorm.ConnectionOptions, map: Map<string, Program>
+                        },
                         logger: Logger, callback: (err, ...args) => void) => {
     if (orm.skip) return callback(void 0);
 
@@ -98,19 +101,19 @@ const waterlineHandler = (orm: {skip: boolean, config?: Waterline.ConfigOptions,
     // Create/init database models and populates exported `waterline_collections`
     Array
         .from(orm.set.values())
-        .forEach(e => waterline_obj.loadCollection(Waterline.Collection.extend(e)));
+        .forEach(e => waterline_obj.registerModel(Waterline.Collection.extend(e)));
     waterline_obj.initialize(orm.config, (err, ontology) => {
         if (err != null)
             return callback(err);
-        else if (ontology == null || ontology.connections == null || ontology.collections == null
-            || ontology.connections.length === 0 || ontology.collections.length === 0) {
+        else if (ontology == null || ontology.datastores == null || ontology.collections == null
+            || ontology.datastores.length === 0 || ontology.collections.length === 0) {
             logger.error('waterline_obj.initialize::ontology =', ontology, ';');
-            return callback(new TypeError('Expected ontology with connections & waterline_collections'));
+            return callback(new TypeError('Expected ontology with datastores & waterline_collections'));
         }
 
         // Tease out fully initialised models.
         logger.info('Waterline initialised with:\t', Object.keys(ontology.collections), ';');
-        return callback(null, { connection: ontology.connections, collections: ontology.collections });
+        return callback(null, { datastore: ontology.datastores, collections: ontology.collections });
     });
 };
 
@@ -144,9 +147,9 @@ export const tearDownConnections = (orms: IOrmsOut, done: (error?: any) => any) 
 
 export const ormMw = (options?: IormMwConfig): RequestHandler | void => {
     const norm = new Set<string>();
-    const waterline_set = new Set<any /*program*/>();
-    const typeorm_map = new Map<string, any /*program*/>();
-    const sequelize_map = new Map<string, any /*program*/>();
+    const waterline_set = new Set<Program>();
+    const typeorm_map = new Map<string, Program>();
+    const sequelize_map = new Map<string, Program>();
 
     const do_models: boolean = options.orms_in == null ? false : Object
         .keys(options.orms_in)
@@ -162,7 +165,7 @@ export const ormMw = (options?: IormMwConfig): RequestHandler | void => {
 
     if (!(options.models instanceof Map))
         options.models = model_route_to_map(options.models);
-    for (const [fname, program] of options.models as Map<string, any>)
+    for (const [fname, program] of options.models as Map<string, Program>)
         if (program != null && fname.indexOf('model') > -1 && do_models)
             populateModels(
                 program, options.omit_models || ['AccessToken'], norm,
