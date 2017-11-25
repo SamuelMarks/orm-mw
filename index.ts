@@ -2,16 +2,20 @@ import * as http from 'http';
 
 import * as Logger from 'bunyan';
 import * as Redis from 'ioredis';
-import * as sequelize from 'sequelize';
-import { Sequelize } from 'sequelize';
-import * as typeorm from 'typeorm';
-import * as Waterline from 'waterline';
-
 import { map, parallel } from 'async';
 
 import { model_route_to_map } from 'nodejs-utils';
 
 import { IormMwConfig, IOrmReq, IOrmsOut, Program, RequestHandler } from 'orm-mw';
+
+/// <reference path="node_modules/@types/sequelize/index.d.ts" />
+/// <reference path="node_modules/typeorm/index.d.ts" />
+/// <reference path="typings/modules/waterline/index.d.ts" />
+/*
+import * as sequelize from 'sequelize';
+import * as typeorm from 'typeorm';
+import * as waterline from 'waterline';
+*/
 
 const populateModels = (program: any,
                         omit_models: string[],
@@ -50,12 +54,18 @@ const redisHandler = (orm: {skip: boolean, config?: Redis.RedisOptions | string}
     });
 };
 
-const sequelizeHandler = (orm: {skip: boolean, uri?: string, config?: sequelize.Options, map: Map<string, Program>},
+const sequelizeHandler = (orm: {
+                              skip: boolean, uri?: string,
+                              config?: {} /*sequelize.Options*/, map: Map<string, Program>
+                          },
                           logger: Logger, callback: (err, ...args) => void) => {
     if (orm.skip) return callback(void 0);
 
+    const sequelize = require('sequelize');
+    const Sequelize = sequelize.Sequelize;
+
     logger.info('Sequelize initialising with:\t', Array.from(orm.map.keys()), ';');
-    const sequelize_obj: sequelize.Sequelize = new sequelize['Sequelize'](orm.uri, orm.config);
+    const sequelize_obj: Sequelize = new sequelize['Sequelize'](orm.uri, orm.config);
 
     const entities = new Map<string, sequelize.Instance<{}> & sequelize.Model<{}, {}>>();
     for (const [entity, program] of orm.map)
@@ -83,8 +93,9 @@ const typeormHandler = (orm: {
     if (orm.skip) return callback(void 0);
 
     logger.info('TypeORM initialising with:\t', Array.from(orm.map.keys()), ';');
+    const { createConnection } = require('typeorm');
     try { // TODO: `uri` handling
-        return typeorm.createConnection(Object.assign({
+        return createConnection(Object.assign({
                 entities: Array.from(orm.map.values())
             }, orm.config
         )).then(connection => callback(null, { connection })).catch(callback);
@@ -93,9 +104,11 @@ const typeormHandler = (orm: {
     }
 };
 
-const waterlineHandler = (orm: {skip: boolean, config?: Waterline.ConfigOptions, set: Set<string>},
+const waterlineHandler = (orm: {skip: boolean, config?: waterline.ConfigOptions, set: Set<string>},
                           logger: Logger, callback: (err, ...args) => void) => {
     if (orm.skip) return callback(void 0);
+
+    const Waterline = require('waterline');
 
     const waterline_obj = new Waterline();
     // Create/init database models and populates exported `waterline_collections`
@@ -126,7 +139,7 @@ export const tearDownSequelizeConnection = (connection: sequelize.Sequelize, don
 export const tearDownTypeOrmConnection = (connection: typeorm.Connection, done: (error?: any) => any) =>
     connection == null || !connection.isConnected ? done(void 0) : connection.close().then(_ => done()).catch(done);
 
-export const tearDownWaterlineConnection = (connections: Waterline.Connection[], done: (error?: any) => any) =>
+export const tearDownWaterlineConnection = (connections: waterline.Connection[], done: (error?: any) => any) =>
     connections ? parallel(Object.keys(connections).map(
         connection => connections[connection]._adapter.teardown
     ), () => {
