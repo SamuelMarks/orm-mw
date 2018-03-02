@@ -12,15 +12,15 @@
     "@types/async": "^2.0.47",
     "@types/bunyan": "^1.8.4",
     "@types/ioredis": "3.2.5",
-    "@types/node": "^9.4.0",
-    "@types/sequelize": "^4.27.4"
+    "@types/node": "^9.4.6",
+    "@types/sequelize": "^4.27.8"
   },
   "dependencies": {
     "async": "^2.6.0",
     "ioredis": "^3.2.2",
     "nodejs-utils": "https://api.github.com/repos/SamuelMarks/nodejs-utils-dist/tarball",
-    "sequelize": "^4.32.2",
-    "typeorm": "0.1.11",
+    "sequelize": "^4.35.1",
+    "typeorm": "0.1.14",
     "waterline": "https://api.github.com/repos/SamuelMarks/waterline/tarball/patch-1"
   }
 }
