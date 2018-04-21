@@ -50,6 +50,10 @@ Update [orm-mw-dist](https://github.com/SamuelMarks/orm-mw-dist):
 
     find -type f -not -name "*.ts" -and -not -path "./.git/*" -and -not -path "./node-modules/*" -and -not -name '*.map' | cpio -pdamv ../orm-mw-dist
 
+Or just a simple:
+
+    cp -r {*.md,*.js*} ../orm-mw-dist
+
 ## Future work
 
   - Add more ORMs and cursors
