@@ -9,18 +9,22 @@
   "author": "Samuel Marks <samuel@offscale.io>",
   "license": "MIT",
   "devDependencies": {
-    "@types/async": "^2.0.50",
+    "@types/async": "^2.4.1",
     "@types/bunyan": "^1.8.5",
-    "@types/ioredis": "4.0.4",
-    "@types/node": "^10.12.10",
-    "@types/sequelize": "^4.27.31"
+    "@types/chai": "^4.1.7",
+    "@types/connect": "^3.4.32",
+    "@types/express": "^4.16.1",
+    "@types/ioredis": "4.0.9",
+    "@types/node": "^11.11.0",
+    "@types/restify": "^7.2.8",
+    "@types/sequelize": "^4.27.41"
   },
   "dependencies": {
-    "async": "^2.6.1",
-    "ioredis": "^4.2.0",
-    "nodejs-utils": "https://api.github.com/repos/SamuelMarks/nodejs-utils-dist/tarball",
-    "sequelize": "^4.41.2",
-    "typeorm": "0.2.9",
+    "async": "^2.6.2",
+    "ioredis": "^4.6.3",
+    "nodejs-utils": "https://api.github.com/repos/SamuelMarks/nodejs-utils-dist/tarball#master",
+    "sequelize": "^4.43.0",
+    "typeorm": "0.2.14",
     "waterline": "https://api.github.com/repos/SamuelMarks/waterline/tarball/patch-1"
   }
 }

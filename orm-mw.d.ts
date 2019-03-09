@@ -1,8 +1,3 @@
-/* tslint:disable:no-reference */
-/// <reference path="typings/modules/connect/index.d.ts" />
-/// <reference path="typings/modules/express/index.d.ts" />
-/// <reference path="typings/modules/restify/index.d.ts" />
-
 import * as bunyan from 'bunyan';
 import * as redis from 'ioredis';
 import * as sequelize from 'sequelize';
