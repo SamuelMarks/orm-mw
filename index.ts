@@ -57,7 +57,7 @@ const sequelizeHandler = (orm: {skip: boolean, uri?: string, config?: sequelize.
     logger.info('Sequelize initialising with:\t', Array.from(orm.map.keys()), ';');
     const sequelize_obj: sequelize.Sequelize = new sequelize['Sequelize'](orm.uri, orm.config);
 
-    const entities = new Map<string, sequelize.Instance<{}> & sequelize.Model<{}, {}>>();
+    const entities = new Map<string, /*sequelize.Instance<{}> &*/ sequelize.Model<{}, {}>>();
     for (const [entity, program] of orm.map)
         entities.set(entity, program(sequelize_obj, orm.map));
 

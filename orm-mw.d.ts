@@ -37,7 +37,7 @@ export interface IOrmsOut {
     };
     sequelize?: {
         connection: sequelize.Sequelize,
-        entities?: Map<string, sequelize.Instance<{}> & sequelize.Model<{}, {}>>
+        entities?: Map<string, /*sequelize.Instance<{}> &*/ sequelize.Model<{}, {}>>
     };
     typeorm?: {
         connection: typeorm.Connection
@@ -48,7 +48,7 @@ export interface IOrmsOut {
     };
 }
 
-export interface IormMwConfig {
+export interface IOrmMwConfig {
     models: Map<string, any>;
 
     omit_models?: string[];
@@ -69,4 +69,4 @@ export declare const tearDownTypeOrmConnection: (connection: typeorm.Connection,
 export declare const tearDownWaterlineConnection: (connections: waterline.Connection[],
                                                    done: (error?: any) => any) => any;
 export declare const tearDownConnections: (orms: IOrmsOut, done: (error?: any) => any) => void;
-export declare const ormMw: (options?: IormMwConfig) => RequestHandler | void;
+export declare const ormMw: (options?: IOrmMwConfig) => RequestHandler | void;
