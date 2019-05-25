@@ -11,7 +11,7 @@ import { map, parallel } from 'async';
 
 import { model_route_to_map } from 'nodejs-utils';
 
-import { IormMwConfig, IOrmReq, IOrmsOut, Program, RequestHandler } from 'orm-mw';
+import { IOrmMwConfig, IOrmReq, IOrmsOut, Program, RequestHandler } from 'orm-mw';
 
 const populateModels = (program: any,
                         omit_models: string[],
@@ -145,7 +145,7 @@ export const tearDownConnections = (orms: IOrmsOut, done: (error?: any) => any) 
         waterline: cb => tearDownWaterlineConnection((orms.waterline || { connection: undefined }).connection, cb)
     }, done);
 
-export const ormMw = (options?: IormMwConfig): RequestHandler | void => {
+export const ormMw = (options?: IOrmMwConfig): RequestHandler | void => {
     const norm = new Set<string>();
     const waterline_set = new Set<Program>();
     const typeorm_map = new Map<string, Program>();

@@ -17,7 +17,7 @@ Supported cursors:
 
     import { ormMw } from 'orm-mw';
 
-    server.use(ormMw(/*IormMwConfig*/));
+    server.use(ormMw(/*IOrmMwConfig*/));
 
 ### Explicit cleanup
 Essentially only useful for tests:
@@ -30,11 +30,11 @@ Essentially only useful for tests:
 
 ## Configuration
 
-See `IormMwConfig` interface in [orm-mw.d.ts](https://github.com/SamuelMarks/orm-mw).
+See `IOrmMwConfig` interface in [orm-mw.d.ts](https://github.com/SamuelMarks/orm-mw).
 
 ## Extending
 
-Adding a new ORM? - Expand the `IormMwConfig` interface, and add a new short-function that implements it. See others for reference.
+Adding a new ORM? - Expand the `IOrmMwConfig` interface, and add a new short-function that implements it. See others for reference.
 
 ### Development setup
 Install the latest Node.JS, `npm i -g typings typescript`, then:
