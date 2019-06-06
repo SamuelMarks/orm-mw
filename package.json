@@ -2,6 +2,7 @@
   "name": "orm-mw",
   "version": "0.0.10",
   "description": "Multi-ORM connect-style middleware",
+  "license": "(MIT OR Apache-2.0)",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
