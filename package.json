@@ -1,8 +1,8 @@
 {
-  "name": "orm-mw",
-  "version": "0.0.11",
+  "name": "@offscale/orm-mw",
+  "version": "0.0.1",
   "description": "Multi-ORM connect-style middleware",
-  "license": "MIT",
+  "license": "(Apache-2.0 OR MIT)",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -20,9 +20,9 @@
     "@types/sequelize": "^4.28.3"
   },
   "dependencies": {
+    "@offscale/nodejs-utils": "^0.0.1",
     "async": "^3.0.1",
     "ioredis": "^4.9.5",
-    "nodejs-utils": "https://api.github.com/repos/SamuelMarks/nodejs-utils-dist/tarball#master",
     "sequelize": "^5.8.7",
     "typeorm": "0.2.18",
     "waterline": "https://api.github.com/repos/SamuelMarks/waterline/tarball/patch-1"
