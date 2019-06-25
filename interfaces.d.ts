@@ -53,7 +53,7 @@ export interface IOrmMwConfig {
 
     omit_models?: string[];
     orms_in: IOrmsIn;
-    callback?: (err: Error, mw?: RequestHandler, orms_out?: IOrmsOut) => void;
+    callback?: (err?: Error, mw?: RequestHandler, orms_out?: IOrmsOut) => void;
 
     logger: bunyan;
 }
@@ -62,11 +62,3 @@ export interface IOrmReq {
     getOrm: () => IOrmsOut;
     orms_out: IOrmsOut;
 }
-
-export declare const tearDownRedisConnection: (connection: redis.Redis, done: (error?: any) => any) => any;
-export declare const tearDownSequelizeConnection: (connection: sequelize.Sequelize, done: (error?: any) => any) => any;
-export declare const tearDownTypeOrmConnection: (connection: typeorm.Connection, done: (error?: any) => any) => any;
-export declare const tearDownWaterlineConnection: (connections: waterline.Connection[],
-                                                   done: (error?: any) => any) => any;
-export declare const tearDownConnections: (orms: IOrmsOut, done: (error?: any) => any) => void;
-export declare const ormMw: (options?: IOrmMwConfig) => RequestHandler | void;

@@ -1,8 +1,6 @@
 {
   "name": "orm-mw",
   "dependencies": {
-    "nodejs-utils": "github:SamuelMarks/nodejs-utils/nodejs-utils.d.ts#master",
-    "orm-mw": "github:SamuelMarks/orm-mw/orm-mw.d.ts",
      "waterline": "github:SamuelMarks/cust_typings/waterline/waterline.d.ts#0e1db6f78f2c9ac654069cfabd17fff21d4fe3bb"
   }
 }

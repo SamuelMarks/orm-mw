@@ -9,9 +9,10 @@ import * as Waterline from 'waterline';
 
 import { map, parallel } from 'async';
 
-import { model_route_to_map } from 'nodejs-utils';
+import { model_route_to_map } from '@offscale/nodejs-utils';
 
-import { IOrmMwConfig, IOrmReq, IOrmsOut, Program, RequestHandler } from 'orm-mw';
+import { IOrmMwConfig, IOrmReq, IOrmsOut, Program, RequestHandler } from './interfaces.d';
+import { bunyan } from 'restify';
 
 const populateModels = (program: any,
                         omit_models: string[],
@@ -38,6 +39,7 @@ const redisHandler = (orm: {skip: boolean, config?: Redis.RedisOptions | string}
                       logger: Logger, callback: (err, ...args) => void) => {
     if (orm.skip) return callback(void 0);
 
+    // @ts-ignore
     const cursor = new Redis(orm.config as Redis.RedisOptions);
     cursor.on('error', err => {
         logger.error(`Redis::error event - ${cursor['options']['host']}:${cursor['options']['port']} - ${err}`);
@@ -55,7 +57,7 @@ const sequelizeHandler = (orm: {skip: boolean, uri?: string, config?: sequelize.
     if (orm.skip) return callback(void 0);
 
     logger.info('Sequelize initialising with:\t', Array.from(orm.map.keys()), ';');
-    const sequelize_obj: sequelize.Sequelize = new sequelize['Sequelize'](orm.uri, orm.config);
+    const sequelize_obj: sequelize.Sequelize = new sequelize['Sequelize'](orm.uri!, orm.config);
 
     const entities = new Map<string, /*sequelize.Instance<{}> &*/ sequelize.Model<{}, {}>>();
     for (const [entity, program] of orm.map)
@@ -97,6 +99,7 @@ const waterlineHandler = (orm: {skip: boolean, config?: Waterline.ConfigOptions,
                           logger: Logger, callback: (err, ...args) => void) => {
     if (orm.skip) return callback(void 0);
 
+    // @ts-ignore
     const waterline_obj = new Waterline();
     // Create/init database models and populates exported `waterline_collections`
     Array
@@ -139,17 +142,19 @@ export const tearDownWaterlineConnection = (connections: Waterline.Connection[],
 
 export const tearDownConnections = (orms: IOrmsOut, done: (error?: any) => any) =>
     orms == null ? done(void 0) : parallel({
-        redis: cb => tearDownRedisConnection((orms.redis || { connection: undefined }).connection, cb),
-        sequelize: cb => tearDownSequelizeConnection((orms.sequelize || { connection: undefined }).connection, cb),
-        typeorm: cb => tearDownTypeOrmConnection((orms.typeorm || { connection: undefined }).connection, cb),
-        waterline: cb => tearDownWaterlineConnection((orms.waterline || { connection: undefined }).connection, cb)
+        redis: cb => tearDownRedisConnection((orms.redis! || { connection: undefined }).connection, cb),
+        sequelize: cb => tearDownSequelizeConnection((orms.sequelize! || { connection: undefined }).connection, cb),
+        typeorm: cb => tearDownTypeOrmConnection((orms.typeorm! || { connection: undefined }).connection, cb),
+        waterline: cb => tearDownWaterlineConnection((orms.waterline! || { connection: undefined }).connection, cb)
     }, done);
 
-export const ormMw = (options?: IOrmMwConfig): RequestHandler | void => {
+export const ormMw = (options: IOrmMwConfig): RequestHandler | void => {
     const norm = new Set<string>();
     const waterline_set = new Set<Program>();
     const typeorm_map = new Map<string, Program>();
     const sequelize_map = new Map<string, Program>();
+
+    if (options.logger == null) options.logger = bunyan.createLogger('orm-mw');
 
     const do_models: boolean = options.orms_in == null ? false : Object
         .keys(options.orms_in)
@@ -183,11 +188,13 @@ export const ormMw = (options?: IOrmMwConfig): RequestHandler | void => {
             typeormHandler(Object.assign(options.orms_in.typeorm, { map: typeorm_map }), options.logger, cb),
         waterline: cb => options.orms_in.waterline == null ? cb(void 0) :
             waterlineHandler(Object.assign(options.orms_in.waterline, { set: waterline_set }), options.logger, cb),
-    }, (err: Error, orms_out: IOrmsOut) => {
+    }, (err: Error | undefined, orms_out: IOrmsOut) => {
         if (err != null) {
             if (options.callback != null) return options.callback(err);
             throw err;
         }
+
+        // @ts-ignore
         const mw: RequestHandler = (req: http.IncomingMessage & IOrmReq, res, next) => {
             req.getOrm = () => orms_out;
             req.orms_out = orms_out;
