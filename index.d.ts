@@ -1,6 +1,6 @@
 /// <reference types="connect" />
 /// <reference types="express" />
-import * as Redis from 'ioredis';
+import Redis from 'ioredis';
 import * as sequelize from 'sequelize';
 import * as typeorm from 'typeorm';
 import * as Waterline from 'waterline';

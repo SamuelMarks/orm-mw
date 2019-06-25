@@ -1,8 +1,8 @@
 import * as bunyan from 'bunyan';
-import * as redis from 'ioredis';
 import * as sequelize from 'sequelize';
 import * as typeorm from 'typeorm';
 import * as waterline from 'waterline';
+import { Redis as RedisInterface, RedisOptions } from 'ioredis';
 
 import { NextHandleFunction as ConnectRequestHandler } from 'connect';
 import { RequestHandler as ExpressRequestHandler } from 'express';
@@ -14,7 +14,7 @@ export type Program = any;
 export interface IOrmsIn {
     redis?: {
         skip: boolean;
-        config?: redis.RedisOptions | string;
+        config?: RedisOptions | string;
     };
     sequelize?: {
         skip: boolean;
@@ -33,7 +33,7 @@ export interface IOrmsIn {
 
 export interface IOrmsOut {
     redis?: {
-        connection: redis.Redis
+        connection: RedisInterface
     };
     sequelize?: {
         connection: sequelize.Sequelize,

@@ -1,7 +1,7 @@
 import * as http from 'http';
 
 import * as Logger from 'bunyan';
-import * as Redis from 'ioredis';
+import Redis, { Redis as RedisInterface, RedisOptions } from 'ioredis';
 import * as sequelize from 'sequelize';
 import { Sequelize } from 'sequelize';
 import * as typeorm from 'typeorm';
@@ -35,12 +35,11 @@ const populateModels = (program: any,
             else norm_set.add(entity);
         });
 
-const redisHandler = (orm: {skip: boolean, config?: Redis.RedisOptions | string},
+const redisHandler = (orm: {skip: boolean, config?: RedisOptions | string},
                       logger: Logger, callback: (err, ...args) => void) => {
     if (orm.skip) return callback(void 0);
 
-    // @ts-ignore
-    const cursor = new Redis(orm.config as Redis.RedisOptions);
+    const cursor: RedisInterface = new Redis(orm.config as RedisOptions);
     cursor.on('error', err => {
         logger.error(`Redis::error event - ${cursor['options']['host']}:${cursor['options']['port']} - ${err}`);
         logger.error(err);
