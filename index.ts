@@ -89,7 +89,7 @@ const typeormHandler = (orm: {
     logger.info('TypeORM initialising with:\t', Array.from(orm.map.keys()), ';');
     try { // TODO: `uri` handling
         return typeorm.createConnection(Object.assign({
-                name: name || 'default',
+                name: orm.name || 'default',
                 entities: Array.from(orm.map.values())
             }, orm.config
         )).then(connection => callback(void 0, { connection })).catch(callback);
