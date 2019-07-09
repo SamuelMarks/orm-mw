@@ -57,6 +57,8 @@ export interface IOrmMwConfig {
     callback?: (err?: Error, mw?: RequestHandler, orms_out?: IOrmsOut) => void;
 
     logger: bunyan;
+
+    connection_name?: string;
 }
 
 export interface IOrmReq {

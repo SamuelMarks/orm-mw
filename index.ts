@@ -92,7 +92,7 @@ const typeormHandler = (orm: {
                 name: name || 'default',
                 entities: Array.from(orm.map.values())
             }, orm.config
-        )).then(connection => callback(null, { connection })).catch(callback);
+        )).then(connection => callback(void 0, { connection })).catch(callback);
     } catch (e) {
         return callback(e);
     }
@@ -119,7 +119,7 @@ const waterlineHandler = (orm: {skip: boolean, config?: Waterline.ConfigOptions,
 
         // Tease out fully initialised models.
         logger.info('Waterline initialised with:\t', Object.keys(ontology.collections), ';');
-        return callback(null, { datastore: ontology.connections, collections: ontology.collections });
+        return callback(void 0, { datastore: ontology.connections, collections: ontology.collections });
     });
 };
 
@@ -187,8 +187,10 @@ export const ormMw = (options: IOrmMwConfig): RequestHandler | void => {
             redisHandler(options.orms_in.redis, options.logger, cb),
         sequelize: cb => options.orms_in.sequelize == null ? cb(void 0) :
             sequelizeHandler(Object.assign(options.orms_in.sequelize, { map: sequelize_map }), options.logger, cb),
-        typeorm: cb => options.orms_in.typeorm == null ? cb(void 0) :
-            typeormHandler(Object.assign(options.orms_in.typeorm, { map: typeorm_map }), options.logger, cb),
+        typeorm: cb => options.orms_in.typeorm == null ? cb(void 0)
+            : typeormHandler(Object.assign(options.orms_in.typeorm,
+                { map: typeorm_map, name: options.connection_name }),
+                options.logger, cb),
         waterline: cb => options.orms_in.waterline == null ? cb(void 0) :
             waterlineHandler(Object.assign(options.orms_in.waterline, { set: waterline_set }), options.logger, cb),
     }, (err: Error | undefined, orms_out: IOrmsOut) => {
