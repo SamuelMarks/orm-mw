@@ -24,6 +24,7 @@ export interface IOrmsIn {
     typeorm?: {
         skip: boolean;
         config?: typeorm.ConnectionOptions;
+        name?: string;
     };
     waterline?: {
         skip: boolean;

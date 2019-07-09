@@ -77,8 +77,11 @@ const sequelizeHandler = (orm: {skip: boolean, uri?: string, config?: sequelize.
 };
 
 const typeormHandler = (orm: {
-                            skip: boolean, uri?: string,
-                            config?: typeorm.ConnectionOptions, map: Map<string, Program>
+                            skip: boolean,
+                            uri?: string,
+                            name?: string,
+                            config?: typeorm.ConnectionOptions,
+                            map: Map<string, Program>
                         },
                         logger: Logger, callback: (err, ...args) => void) => {
     if (orm.skip) return callback(void 0);
@@ -86,6 +89,7 @@ const typeormHandler = (orm: {
     logger.info('TypeORM initialising with:\t', Array.from(orm.map.keys()), ';');
     try { // TODO: `uri` handling
         return typeorm.createConnection(Object.assign({
+                name: name || 'default',
                 entities: Array.from(orm.map.values())
             }, orm.config
         )).then(connection => callback(null, { connection })).catch(callback);
