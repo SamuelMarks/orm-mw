@@ -26,17 +26,20 @@ const populateModels = (program: any,
         .forEach(entity => {
             if (program[entity].identity || program[entity].tableName)
                 waterline_set.add(program[entity]);
-            else if (typeof program[entity] === 'function')
-                if (program[entity].toString().indexOf('sequelize') > -1)
+            else if (typeof program[entity] === 'function') {
+                const program_str = program[entity].toString();
+                if (program_str.indexOf('sequelize') > -1)
                     sequelize_map.set(entity, program[entity]);
-                else if (program[entity].toString().indexOf('class') > -1)
+                else if (program_str.indexOf('class') > -1)
                     typeorm_map.set(entity, program[entity]);
                 else norm_set.add(entity);
-            else norm_set.add(entity);
+            } else
+                norm_set.add(entity);
         });
 
 const redisHandler = (orm: {skip: boolean, config?: RedisOptions | string},
-                      logger: Logger, callback: (err, ...args) => void) => {
+                      logger: Logger,
+                      callback: (err, ...args) => void) => {
     if (orm.skip) return callback(void 0);
 
     const cursor: RedisInterface = new Redis(orm.config as RedisOptions);
@@ -88,11 +91,14 @@ const typeormHandler = (orm: {
 
     logger.info('TypeORM initialising with:\t', Array.from(orm.map.keys()), ';');
     try { // TODO: `uri` handling
-        return typeorm.createConnection(Object.assign({
-                name: orm.name || 'default',
-                entities: Array.from(orm.map.values())
-            }, orm.config
-        )).then(connection => callback(void 0, { connection })).catch(callback);
+        return typeorm
+            .createConnection(Object.assign({
+                    name: orm.name || 'default',
+                    entities: Array.from(orm.map.values())
+                }, orm.config
+            ))
+            .then(connection => callback(void 0, { connection }))
+            .catch(callback);
     } catch (e) {
         return callback(e);
     }
