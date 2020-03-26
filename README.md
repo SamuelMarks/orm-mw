@@ -2,6 +2,8 @@ orm-mw
 ======
 [![License](https://img.shields.io/badge/license-Apache--2.0%20OR%20MIT-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 ![npm](https://img.shields.io/npm/v/@offscale/orm-mw)
+![David dependency status for latest release](https://david-dm.org/offscale/orm-mw.svg)
+![npm-publish](https://github.com/SamuelMarks/ng-material-scaffold/workflows/npm-publish/badge.svg)
 
 Generic--connect, restify, express--middleware adding connection to 0-k ORMs to a `.getDb` method on `req`.
 
@@ -26,6 +28,7 @@ Supported cursors:
     server.use(ormMw(/*IOrmMwConfig*/));
 
 ### Explicit cleanup
+
 Essentially only useful for tests:
 
     import { tearDownConnections } from '@offscale/orm-mw';
@@ -43,6 +46,7 @@ See `IOrmMwConfig` interface in [orm-mw.d.ts](https://github.com/SamuelMarks/orm
 Adding a new ORM? - Expand the `IOrmMwConfig` interface, and add a new short-function that implements it. See others for reference.
 
 ### Development setup
+
 Install the latest Node.JS, `npm i -g typings typescript`, then:
 
     git clone https://github.com/SamuelMarks/orm-mw
