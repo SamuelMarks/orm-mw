@@ -21,7 +21,9 @@ jobs:
                   npm ci && \
                   tsc
             - name: Publish
-              uses: pascalgn/npm-publish-action@master
+              run: |
+                  printf '//registry.npmjs.org/:_authToken=%s\n' "${NPM_AUTH_TOKEN}" >> ~/.npmrc
+                  npm publish --access public
               env:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
                   NPM_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
