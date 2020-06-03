@@ -1,11 +1,16 @@
-import * as http from 'http';
+import {IncomingMessage} from 'http';
 
-import * as Logger from 'bunyan';
+import Logger from 'bunyan';
 import Redis, { Redis as RedisInterface, RedisOptions } from 'ioredis';
-import * as sequelize from 'sequelize';
-import { Sequelize } from 'sequelize';
-import * as typeorm from 'typeorm';
-import * as Waterline from 'waterline';
+import sequelize, { Sequelize } from 'sequelize';
+import {
+    Connection as TypeOrmConnection,
+    ConnectionOptions as TypeOrmConnectionOptions,
+    createConnection as TypeOrmCreateConnection
+} from 'typeorm';
+import Waterline, {Connection as WaterlineConnection,
+    ConfigOptions as WaterlineConfigOptions,
+    Collection as WaterlineCollection} from 'waterline';
 
 import { map, parallel } from 'async';
 
@@ -83,7 +88,7 @@ const typeormHandler = (orm: {
                             skip: boolean,
                             uri?: string,
                             name?: string,
-                            config?: typeorm.ConnectionOptions,
+                            config?: TypeOrmConnectionOptions,
                             map: Map<string, Program>
                         },
                         logger: Logger, callback: (err, ...args) => void) => {
@@ -91,12 +96,11 @@ const typeormHandler = (orm: {
 
     logger.info('TypeORM initialising with:\t', Array.from(orm.map.keys()), ';');
     try { // TODO: `uri` handling
-        return typeorm
-            .createConnection(Object.assign({
-                    name: orm.name || 'default',
-                    entities: Array.from(orm.map.values())
-                }, orm.config
-            ))
+        return TypeOrmCreateConnection(Object.assign({
+                name: orm.name || 'default',
+                entities: Array.from(orm.map.values())
+            }, orm.config
+        ))
             .then(connection => callback(void 0, { connection }))
             .catch(callback);
     } catch (e) {
@@ -104,16 +108,17 @@ const typeormHandler = (orm: {
     }
 };
 
-const waterlineHandler = (orm: {skip: boolean, config?: Waterline.ConfigOptions, set: Set<string>},
+const waterlineHandler = (orm: {skip: boolean, config?: WaterlineConfigOptions, set: Set<string>},
                           logger: Logger, callback: (err, ...args) => void) => {
     if (orm.skip) return callback(void 0);
+    else if (orm.config == null) return callback(new Error('No config provided to waterlineHandler'));
 
     // @ts-ignore
     const waterline_obj = new Waterline();
     // Create/init database models and populates exported `waterline_collections`
     Array
         .from(orm.set.values())
-        .forEach(e => waterline_obj.loadCollection(Waterline.Collection.extend(e)));
+        .forEach(e => waterline_obj.loadCollection(WaterlineCollection.extend(e)));
     waterline_obj.initialize(orm.config, (err, ontology) => {
         if (err != null)
             return callback(err);
@@ -135,10 +140,10 @@ export const tearDownRedisConnection = (connection: Redis.Redis, done: (error?: 
 export const tearDownSequelizeConnection = (connection: sequelize.Sequelize, done: (error?: any) => any) =>
     connection == null ? done(void 0) : done(connection.close());
 
-export const tearDownTypeOrmConnection = (connection: typeorm.Connection, done: (error?: any) => any) =>
+export const tearDownTypeOrmConnection = (connection: TypeOrmConnection, done: (error?: any) => any) =>
     connection == null || !connection.isConnected ? done(void 0) : connection.close().then(_ => done()).catch(done);
 
-export const tearDownWaterlineConnection = (connections: Waterline.Connection[], done: (error?: any) => any) =>
+export const tearDownWaterlineConnection = (connections: WaterlineConnection[], done: (error?: any) => any) =>
     connections ? parallel(Object.keys(connections).map(
         connection => connections[connection]._adapter.teardown
     ), () => {
@@ -206,7 +211,7 @@ export const ormMw = (options: IOrmMwConfig): RequestHandler | void => {
         }
 
         // @ts-ignore
-        const mw: RequestHandler = (req: http.IncomingMessage & IOrmReq, res, next) => {
+        const mw: RequestHandler = (req: IncomingMessage & IOrmReq, res, next) => {
             req.getOrm = () => orms_out;
             req.orms_out = orms_out;
             return next();

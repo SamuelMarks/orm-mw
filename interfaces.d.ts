@@ -1,7 +1,11 @@
-import * as bunyan from 'bunyan';
-import * as sequelize from 'sequelize';
-import * as typeorm from 'typeorm';
-import * as waterline from 'waterline';
+import bunyan from 'bunyan';
+import { Options as SequelizeOptions, Sequelize } from 'sequelize';
+import { Connection as TypeOrmConnection, ConnectionOptions as TypeOrmConnectionOptions } from 'typeorm';
+import {
+    ConfigOptions as WaterlineConfigOptions,
+    Connection as WaterlineConnection,
+    Query as WaterlineQuery
+} from 'waterline';
 import { Redis as RedisInterface, RedisOptions } from 'ioredis';
 
 import { NextHandleFunction as ConnectRequestHandler } from 'connect';
@@ -19,16 +23,16 @@ export interface IOrmsIn {
     sequelize?: {
         skip: boolean;
         uri?: string;
-        config?: sequelize.Options;
+        config?: SequelizeOptions;
     };
     typeorm?: {
         skip: boolean;
-        config?: typeorm.ConnectionOptions;
+        config?: TypeOrmConnectionOptions;
         name?: string;
     };
     waterline?: {
         skip: boolean;
-        config?: waterline.ConfigOptions;
+        config?: WaterlineConfigOptions;
     };
 }
 
@@ -37,15 +41,15 @@ export interface IOrmsOut {
         connection: RedisInterface
     };
     sequelize?: {
-        connection: sequelize.Sequelize,
-        entities?: Map<string, /*sequelize.Instance<{}> &*/ sequelize.Model<{}, {}>>
+        connection: Sequelize,
+        entities?: Map<string, /*sequelize.Instance<{}> &*/ SequelizeOptions>
     };
     typeorm?: {
-        connection: typeorm.Connection
+        connection: TypeOrmConnection
     };
     waterline?: {
-        connection: waterline.Connection[],
-        collections?: waterline.Query[]
+        connection: WaterlineConnection[],
+        collections?: WaterlineQuery[]
     };
 }
 

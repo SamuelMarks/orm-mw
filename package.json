@@ -1,6 +1,6 @@
 {
   "name": "@offscale/orm-mw",
-  "version": "0.0.15",
+  "version": "0.0.16",
   "description": "Multi-ORM connect-style middleware",
   "license": "(Apache-2.0 OR MIT)",
   "author": "Samuel Marks @SamuelMarks",
