@@ -1,6 +1,6 @@
 {
   "name": "@offscale/orm-mw",
-  "version": "0.0.14",
+  "version": "0.0.15",
   "description": "Multi-ORM connect-style middleware",
   "license": "(Apache-2.0 OR MIT)",
   "author": "Samuel Marks @SamuelMarks",
@@ -16,6 +16,7 @@
     "async": "^3.2.0",
     "ioredis": "^4.17.3",
     "sequelize": "^5.21.11",
+    "tslib": "^2.0.0",
     "typeorm": "https://api.github.com/repos/SamuelMarks/typeorm/tarball/release",
     "waterline": "https://api.github.com/repos/SamuelMarks/waterline/tarball/patch-1"
   },
