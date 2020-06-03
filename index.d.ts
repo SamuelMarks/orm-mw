@@ -1,4 +1,5 @@
 /// <reference types="connect" />
+/// <reference types="qs" />
 /// <reference types="express" />
 import Redis from 'ioredis';
 import * as sequelize from 'sequelize';
@@ -10,4 +11,4 @@ export declare const tearDownSequelizeConnection: (connection: sequelize.Sequeli
 export declare const tearDownTypeOrmConnection: (connection: typeorm.Connection, done: (error?: any) => any) => any;
 export declare const tearDownWaterlineConnection: (connections: Waterline.Connection[], done: (error?: any) => any) => any;
 export declare const tearDownConnections: (orms: IOrmsOut, done: (error?: any) => any) => any;
-export declare const ormMw: (options: IOrmMwConfig) => void | import("connect").NextHandleFunction | import("express").RequestHandler<import("express-serve-static-core").ParamsDictionary, any, any, import("express-serve-static-core").Query> | import("restify").RequestHandler;
+export declare const ormMw: (options: IOrmMwConfig) => void | import("restify").RequestHandler | import("connect").NextHandleFunction | import("express").RequestHandler<import("express-serve-static-core").ParamsDictionary, any, any, import("qs").ParsedQs>;
