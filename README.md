@@ -1,9 +1,8 @@
 orm-mw
 ======
 [![License](https://img.shields.io/badge/license-Apache--2.0%20OR%20MIT-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-![npm](https://img.shields.io/npm/v/@offscale/orm-mw)
-![David dependency status for latest release](https://david-dm.org/SamuelMarks/orm-mw.svg)
 ![npm-publish](https://github.com/SamuelMarks/orm-mw/workflows/npm-publish/badge.svg)
+[![NPM version](https://img.shields.io/npm/v/@offscale/orm-mw.svg)](https://www.npmjs.com/package/@offscale/orm-mw)
 
 Generic--connect, restify, express--middleware adding connection to 0-k ORMs to a `.getDb` method on `req`.
 

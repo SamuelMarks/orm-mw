@@ -36,6 +36,10 @@ export interface IOrmsIn {
     };
 }
 
+export interface IWaterlineAdapter {
+    _adapter?: { teardown: any, identity: string, connections: any } | null | undefined
+}
+
 export interface IOrmsOut {
     redis?: {
         connection: RedisInterface
@@ -48,7 +52,7 @@ export interface IOrmsOut {
         connection: TypeOrmConnection
     };
     waterline?: {
-        connection: WaterlineConnection[],
+        connection: Array<WaterlineConnection & IWaterlineAdapter>,
         collections?: WaterlineQuery[]
     };
 }

@@ -1,4 +1,4 @@
-import {IncomingMessage} from 'http';
+import { IncomingMessage } from 'http';
 
 import Logger from 'bunyan';
 import Redis, { Redis as RedisInterface, RedisOptions } from 'ioredis';
@@ -8,15 +8,17 @@ import {
     ConnectionOptions as TypeOrmConnectionOptions,
     createConnection as TypeOrmCreateConnection
 } from 'typeorm';
-import Waterline, {Connection as WaterlineConnection,
+import Waterline, {
+    Connection as WaterlineConnection,
     ConfigOptions as WaterlineConfigOptions,
-    Collection as WaterlineCollection} from 'waterline';
+    Collection as WaterlineCollection
+} from 'waterline';
 
 import { map, parallel } from 'async';
 
 import { model_route_to_map } from '@offscale/nodejs-utils';
 
-import { IOrmMwConfig, IOrmReq, IOrmsOut, Program, RequestHandler } from './interfaces.d';
+import { IOrmMwConfig, IOrmReq, IOrmsOut, IWaterlineAdapter, Program, RequestHandler } from './interfaces.d';
 import { bunyan } from 'restify';
 
 const populateModels = (program: any,
@@ -42,9 +44,9 @@ const populateModels = (program: any,
                 norm_set.add(entity);
         });
 
-const redisHandler = (orm: {skip: boolean, config?: RedisOptions | string},
+const redisHandler = (orm: { skip: boolean, config?: RedisOptions | string },
                       logger: Logger,
-                      callback: (err, ...args) => void) => {
+                      callback: (err: Error | null | undefined | unknown, ...args: any[]) => void) => {
     if (orm.skip) return callback(void 0);
 
     const cursor: RedisInterface = new Redis(orm.config as RedisOptions);
@@ -59,8 +61,8 @@ const redisHandler = (orm: {skip: boolean, config?: RedisOptions | string},
     });
 };
 
-const sequelizeHandler = (orm: {skip: boolean, uri?: string, config?: sequelize.Options, map: Map<string, Program>},
-                          logger: Logger, callback: (err, ...args) => void) => {
+const sequelizeHandler = (orm: { skip: boolean, uri?: string, config?: sequelize.Options, map: Map<string, Program> },
+                          logger: Logger, callback: (err: Error | null | undefined | unknown, ...args: any[]) => void) => {
     if (orm.skip) return callback(void 0);
 
     logger.info('Sequelize initialising with:\t', Array.from(orm.map.keys()), ';');
@@ -91,7 +93,7 @@ const typeormHandler = (orm: {
                             config?: TypeOrmConnectionOptions,
                             map: Map<string, Program>
                         },
-                        logger: Logger, callback: (err, ...args) => void) => {
+                        logger: Logger, callback: (err: Error | null | undefined | unknown, ...args: any[]) => void) => {
     if (orm.skip) return callback(void 0);
 
     logger.info('TypeORM initialising with:\t', Array.from(orm.map.keys()), ';');
@@ -108,8 +110,8 @@ const typeormHandler = (orm: {
     }
 };
 
-const waterlineHandler = (orm: {skip: boolean, config?: WaterlineConfigOptions, set: Set<string>},
-                          logger: Logger, callback: (err, ...args) => void) => {
+const waterlineHandler = (orm: { skip: boolean, config?: WaterlineConfigOptions, set: Set<string> },
+                          logger: Logger, callback: (err: Error | null | undefined | unknown, ...args: any[]) => void) => {
     if (orm.skip) return callback(void 0);
     else if (orm.config == null) return callback(new Error('No config provided to waterlineHandler'));
 
@@ -143,13 +145,15 @@ export const tearDownSequelizeConnection = (connection: sequelize.Sequelize, don
 export const tearDownTypeOrmConnection = (connection: TypeOrmConnection, done: (error?: any) => any) =>
     connection == null || !connection.isConnected ? done(void 0) : connection.close().then(_ => done()).catch(done);
 
-export const tearDownWaterlineConnection = (connections: WaterlineConnection[], done: (error?: any) => any) =>
+export const tearDownWaterlineConnection = (connections: Array<WaterlineConnection & IWaterlineAdapter>,
+                                            done: (error?: any) => any) =>
     connections ? parallel(Object.keys(connections).map(
-        connection => connections[connection]._adapter.teardown
+        connection => connections[parseInt(connection, 10)]._adapter!.teardown
     ), () => {
         Object.keys(connections).forEach(connection => {
-            if (['sails-tingo', 'waterline-nedb'].indexOf(connections[connection]._adapter.identity) < 0)
-                connections[connection]._adapter.connections.delete(connection);
+            const connection_idx = parseInt(connection, 10)
+            if (['sails-tingo', 'waterline-nedb'].indexOf(connections[connection_idx]._adapter!.identity) < 0)
+                connections[connection_idx]._adapter!.connections.delete(connection);
         });
         return done();
     }) : done();
@@ -159,7 +163,7 @@ export const tearDownConnections = (orms: IOrmsOut, done: (error?: any) => any) 
         redis: cb => tearDownRedisConnection((orms.redis! || { connection: undefined }).connection, cb),
         sequelize: cb => tearDownSequelizeConnection((orms.sequelize! || { connection: undefined }).connection, cb),
         typeorm: cb => tearDownTypeOrmConnection((orms.typeorm! || { connection: undefined }).connection, cb),
-        waterline: cb => tearDownWaterlineConnection((orms.waterline! || { connection: undefined }).connection, cb)
+        waterline: cb => tearDownWaterlineConnection((orms.waterline! || { connection: { _adapter: undefined } }).connection, cb)
     }, done);
 
 export const ormMw = (options: IOrmMwConfig): RequestHandler | void => {
@@ -173,11 +177,13 @@ export const ormMw = (options: IOrmMwConfig): RequestHandler | void => {
     const do_models: boolean = options.orms_in == null ? false : Object
         .keys(options.orms_in)
         .filter(orm => orm !== 'Redis')
-        .some(orm => options.orms_in[orm].skip === false);
+        .some(orm => (options.orms_in as typeof options.orms_in & {
+            [key: string]: { skip: boolean }
+        })[orm].skip === false);
 
     if (!do_models) {
         options.logger.warn('Not registering any ORMs or cursors');
-        const mw = (req, res, next) => next();
+        const mw = (req: any, res: any, next: any) => next();
         if (options.callback == null) return mw;
         return options.callback(void 0, mw, {});
     }
@@ -195,15 +201,17 @@ export const ormMw = (options: IOrmMwConfig): RequestHandler | void => {
 
     parallel({
         redis: cb => options.orms_in.redis == null ? cb(void 0) :
-            redisHandler(options.orms_in.redis, options.logger, cb),
+            redisHandler(options.orms_in.redis, options.logger, cb as (err: unknown, ...args: any[]) => void),
         sequelize: cb => options.orms_in.sequelize == null ? cb(void 0) :
-            sequelizeHandler(Object.assign(options.orms_in.sequelize, { map: sequelize_map }), options.logger, cb),
+            sequelizeHandler(Object.assign(options.orms_in.sequelize, { map: sequelize_map }), options.logger,
+                cb as (err: unknown, ...args: any[]) => void),
         typeorm: cb => options.orms_in.typeorm == null ? cb(void 0)
             : typeormHandler(Object.assign(options.orms_in.typeorm,
-                { map: typeorm_map, name: options.connection_name }),
-                options.logger, cb),
+                    { map: typeorm_map, name: options.connection_name }),
+                options.logger, cb as (err: unknown, ...args: any[]) => void),
         waterline: cb => options.orms_in.waterline == null ? cb(void 0) :
-            waterlineHandler(Object.assign(options.orms_in.waterline, { set: waterline_set }), options.logger, cb),
+            waterlineHandler(Object.assign(options.orms_in.waterline, { set: waterline_set }), options.logger,
+                cb as (err: unknown, ...args: any[]) => void),
     }, (err: Error | undefined, orms_out: IOrmsOut) => {
         if (err != null) {
             if (options.callback != null) return options.callback(err);
