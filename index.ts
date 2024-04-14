@@ -1,6 +1,6 @@
 import { IncomingMessage } from 'http';
 
-import Logger from 'bunyan';
+import { pino, Logger } from 'pino';
 import Redis, { Redis as RedisInterface, RedisOptions } from 'ioredis';
 import sequelize, { Sequelize } from 'sequelize';
 import {
@@ -19,7 +19,6 @@ import { map, parallel } from 'async';
 import { model_route_to_map } from '@offscale/nodejs-utils';
 
 import { IOrmMwConfig, IOrmReq, IOrmsOut, IWaterlineAdapter, Program, RequestHandler } from './interfaces.d';
-import { bunyan } from 'restify';
 
 const populateModels = (program: any,
                         omit_models: string[],
@@ -172,7 +171,7 @@ export const ormMw = (options: IOrmMwConfig): RequestHandler | void => {
     const typeorm_map = new Map<string, Program>();
     const sequelize_map = new Map<string, Program>();
 
-    if (options.logger == null) options.logger = bunyan.createLogger('orm-mw');
+    if (options.logger == null) options.logger = pino({name: 'orm-mw'});
 
     const do_models: boolean = options.orms_in == null ? false : Object
         .keys(options.orms_in)

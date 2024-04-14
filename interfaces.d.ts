@@ -1,4 +1,4 @@
-import bunyan from 'bunyan';
+import { Logger } from 'pino';
 import { Options as SequelizeOptions, Sequelize } from 'sequelize';
 import { Connection as TypeOrmConnection, ConnectionOptions as TypeOrmConnectionOptions } from 'typeorm';
 import {
@@ -64,7 +64,7 @@ export interface IOrmMwConfig {
     orms_in: IOrmsIn;
     callback?: (err?: Error, mw?: RequestHandler, orms_out?: IOrmsOut) => void;
 
-    logger: bunyan;
+    logger: Logger;
 
     connection_name?: string;
 }
